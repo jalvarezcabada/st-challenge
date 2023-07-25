@@ -1,2 +1,2 @@
 pyspark==3.4.1
-pandas==2.0.3
+polars==0.18.8
