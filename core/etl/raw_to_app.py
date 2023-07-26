@@ -1,5 +1,5 @@
 import polars as pl
-from datetime import datetime, timezone
+from datetime import datetime
 
 from etl.utils.read_format import read_txt
 from etl.utils.write_format import write_df_on_parquet
@@ -7,10 +7,15 @@ from etl.utils.logger_manager import create_logger
 
 logger = create_logger(__name__)
 
-class Order:
+class OrderMananger:
 
-    @staticmethod
-    def fact_orders_etl(
+    def __init__(self,
+        output_save: str
+    ):
+
+        self.output_save = output_save
+
+    def fact_orders_etl(self,
         raw_path:str
     )-> None:
 
@@ -50,7 +55,7 @@ class Order:
             "creation_ts"
         ])
 
-        curated_path = "./db/app/fact_orders.parquet"
+        curated_path = f"{self.output_save}/fact_orders.parquet"
         logger.info(f"Wrinting curated data in: {curated_path}")
         write_df_on_parquet(
             df=fact_orders,
@@ -59,8 +64,7 @@ class Order:
 
         logger.info("The writing process completed successfully")
 
-    @staticmethod
-    def agg_orders(
+    def agg_orders(self,
         curated_path: str
     )-> None:
         
@@ -79,7 +83,7 @@ class Order:
         ) \
         .with_columns(creation_ts = now)
 
-        write_path = "./db/app/agg_orders.parquet"
+        write_path = f"{self.output_save}/agg_orders.parquet"
         logger.info(f"Wrinting in: {write_path}")
         write_df_on_parquet(
             df=agg_orders,

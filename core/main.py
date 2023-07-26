@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from etl.landing_to_raw import LandingToRaw
-from etl.raw_to_app import Order
+from etl.raw_to_app import OrderMananger
 from etl.utils.logger_manager import create_logger
 
 logger = create_logger(__name__)
@@ -13,6 +13,7 @@ RAW_METADATA_COLUMNS = [
     "_job_batch_runtime", 
     "_job_batch_id"
 ]
+OUTPUT_SAVE = "./db/app"
 
 if __name__=="__main__":
 
@@ -25,12 +26,14 @@ if __name__=="__main__":
         metadata_columns = RAW_METADATA_COLUMNS
     )
 
+    order_manager = OrderMananger(output_save=OUTPUT_SAVE)
+
     logger.info("Creating fact_orders table consuming raw data")
-    Order.fact_orders_etl(
+    order_manager.fact_orders_etl(
         raw_path=f"./db/raw/orders_{date}.txt"
     )
 
     logger.info("Creating orders aggregation table")
-    Order.agg_orders(
+    order_manager.agg_orders(
         curated_path=f"./db/app/fact_orders.parquet"
     )
