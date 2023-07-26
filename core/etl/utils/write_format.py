@@ -12,10 +12,9 @@ def write_txt(
     try:
         with open(file_path, 'w') as txt_file:
             for row in data:
-
                 json_data = {field: row[field] for field in row if field not in metadata_columns}
                 metadata_values = [row[column] for column in metadata_columns]
-                metadata = {i: metadata_values[i] for i in range(len(metadata_values))}
+                metadata = {metadata_columns[i]: metadata_values[i] for i in range(len(metadata_values))}
 
                 metadata["creation_ts"] = datetime.now().isoformat()
                 output_data = {
